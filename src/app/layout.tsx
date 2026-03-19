@@ -4,6 +4,7 @@ import "./globals.css";
 import { Header } from "@/components/header";
 import { Toaster } from "@/components/UI/sonner";
 import ConditionalHeader from "@/components/conditional-header";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,7 +15,6 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
-
 
 const syne = Syne({
   subsets: ["latin"],
@@ -34,11 +34,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-      <ConditionalHeader>
-           <Header /> 
-        </ConditionalHeader>
-        {children}
-        <Toaster position="top-center"/>
+        <ThemeProvider>
+          <ConditionalHeader>
+            <Header />
+          </ConditionalHeader>
+          {children}
+          <Toaster position="top-center" />
+        </ThemeProvider>
       </body>
     </html>
   );

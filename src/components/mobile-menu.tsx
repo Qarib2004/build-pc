@@ -6,6 +6,7 @@ import type { Session } from "next-auth";
 import { LayoutList, Plus, Users, LogIn } from "lucide-react"; 
 import { signOut } from "next-auth/react";
 import { Button } from "./UI/button";
+import { ThemeToggle } from "./theme-toggle";
 
 export function MobileMenu({ session }: { session: Session | null }) {
   const [open, setOpen] = useState(false);
@@ -37,6 +38,7 @@ export function MobileMenu({ session }: { session: Session | null }) {
             <Link href="/builds/explore" onClick={() => setOpen(false)} className="flex gap-1 font-mono text-[11px] uppercase tracking-widest text-muted-foreground hover:text-foreground py-3 border-b border-border transition-colors">
               <Users className="h-4 w-4" /> Public builds
             </Link>
+
             
             <div className="pt-2">
               {session ? (
