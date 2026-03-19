@@ -17,6 +17,7 @@ type BuildComponentInput = {
 type Props = {
   buildName: string;
   buildComponents: BuildComponentInput[];
+  buildId: string  
 }
 
 function buildInitialSelected(
@@ -40,7 +41,7 @@ function buildInitialSelected(
   return selected;
 }
 
-export function EditBuildForm({ buildName, buildComponents }: Props) {
+export function EditBuildForm({ buildName, buildComponents,buildId }: Props) {
   const initialSelected = useMemo(
     () => buildInitialSelected(buildComponents),
     [buildComponents]
@@ -118,6 +119,7 @@ export function EditBuildForm({ buildName, buildComponents }: Props) {
         onOpenChange={setSaveDialogOpen}
         selectedByCategory={selectedByCategory}
         defaultName={buildName}
+        buildId={buildId}
         redirectPath="/builds"
       />
     </>

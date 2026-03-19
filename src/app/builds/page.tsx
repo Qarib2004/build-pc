@@ -28,6 +28,7 @@ export default async function MyBuilds() {
                             <BuildCard
                                 key={b.id}
                                 build={b}
+                                sessionUserId={session?.user?.id}
                             >
                                 <DeleteBuildButton buildId={b.id} deleteAction={deleteBuildAction}/>
                                 <form action={setBuildPublicAction} className="contents">

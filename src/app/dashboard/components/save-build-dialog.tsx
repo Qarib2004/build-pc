@@ -16,6 +16,7 @@ type Props = {
   selectedByCategory: Record<string, Component | null>;
   defaultName?: string;
   redirectPath?: string;
+  buildId?: string; 
 };
 
 const initialState: SaveBuildFromState = { status: "idle" };
@@ -39,6 +40,8 @@ export function SaveBuildDialog({
   selectedByCategory,
   defaultName,
   redirectPath,
+  buildId
+
 }: Props) {
   const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
@@ -144,6 +147,7 @@ export function SaveBuildDialog({
               name="componentIds"
               value={componentIds.join(",")}
             />
+             <input type="hidden" name="buildId" value={buildId ?? ""} />
           </div>
 
           <DialogFooter className="px-6 py-4 border-t border-border flex flex-col-reverse sm:flex-row gap-2">

@@ -10,89 +10,98 @@ export type SaveBuildFromState = {
     message?: string
 }
 
+
 export async function saveBuildAction(
     _prevState: SaveBuildFromState,
     formData: FormData
-): Promise<SaveBuildFromState> {
-    const name = String(formData.get('name')?? '').trim();
-    const componentIds = String(formData.get('componentIds'))
-        .split(',')
-        .map((id) => id.trim())
-        .filter(Boolean)
-
-    const result = await saveBuild(name, componentIds)
-
+  ): Promise<SaveBuildFromState> {
+    const name = String(formData.get('name') ?? '').trim()
+    const componentIds = String(formData.get('componentIds') ?? '')
+      .split(',')
+      .map((id) => id.trim())
+      .filter(Boolean)
+  
+    const buildId = formData.get('buildId')?.toString().trim() || undefined
+  
+    const result = await saveBuild(name, componentIds, buildId)
+  
     if (!result.success) {
-        return {
-            status: 'error',
-            message: result.error
-        }
+      return { status: 'error', message: result.error }
     }
-
-    return {
-        status: 'success',
-        message: 'Assembly successfully saved'
-    }
-}
+  
+    return { status: 'success', message: 'Build saved successfully' }
+  }
 
 export async function saveBuild(
     name: string,
-    componentIds: string[]
+    componentIds: string[],
+    buildId?: string 
 ): Promise<{success: true; buildId: string} | { success: false; error: string }> {
     const session = await auth();
 
     if (!session?.user.id) {
-        return { success: false, error: 'You need to log in'}
+        return { success: false, error: 'You need to log in' }
     }
 
     const trimmedName = name.trim()
-
     if (!trimmedName) {
-        return { success: false, error: 'Enter the build name'}
+        return { success: false, error: 'Enter the build name' }
     }
 
     if(componentIds.length === 0) {
-        return { success: false, error: 'Add at least one component'}
+        return { success: false, error: 'Add at least one component' }
     }
 
     const components = await prisma.component.findMany({
-        where: { id: { in: componentIds }}
+        where: { id: { in: componentIds } }
     })
 
     if (components.length !== componentIds.length) {
-         return { success: false, error: 'Some components not found'}
+         return { success: false, error: 'Some components not found' }
     }
 
     const totalPrice = components.reduce((s,c) => s + c.price, 0)
 
     try {
-        const build = await prisma.$transaction(
-            async (tx) => {
-                const newBuild = await tx.build.create({
+        const build = await prisma.$transaction(async (tx) => {
+            let savedBuild;
+
+            if (buildId) {
+                savedBuild = await tx.build.update({
+                    where: { id: buildId },
+                    data: {
+                        name: trimmedName,
+                        totalPrice
+                    }
+                })
+
+                await tx.buildComponent.deleteMany({ where: { buildId } })
+            } else {
+                savedBuild = await tx.build.create({
                     data: {
                         name: trimmedName,
                         totalPrice,
                         userId: session.user.id
                     }
                 })
-
-                await tx.buildComponent.createMany({
-                    data: componentIds.map(componentId => ({
-                        buildId: newBuild.id,
-                        componentId
-                    }))
-                })
-
-                return newBuild
             }
-        )
+
+            await tx.buildComponent.createMany({
+                data: componentIds.map(componentId => ({
+                    buildId: savedBuild.id,
+                    componentId
+                }))
+            })
+
+            return savedBuild
+        })
 
         revalidatePath('/dashboard');
         revalidatePath('/builds');
 
-        return { success: true, buildId: build.id}
+        return { success: true, buildId: build.id }
     } catch (error) {
-         return { success: false, error: 'Failed to save builds'}
+         return { success: false, error: 'Failed to save builds' }
     }
 }
 

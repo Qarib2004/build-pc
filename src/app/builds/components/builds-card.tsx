@@ -1,10 +1,10 @@
-'use client'
-
+"use client";
 import { Pencil } from "lucide-react";
 import Link from "next/link";
+import { EditBuildButton } from "./edit-build-button";
 
 type BuildCard = {
-  user: { email: string };
+  user: { email: string,id: string};
   id: string;
   name: string;
   totalPrice: number;
@@ -18,12 +18,12 @@ type BuildCard = {
 type Props = {
   build: BuildCard;
   children?: React.ReactNode;
+  sessionUserId?: string;
 };
 
-export function BuildCard({ build, children }: Props) {
+export function BuildCard({ build, children,sessionUserId }: Props) {
   return (
     <div className="flex flex-col border border-border rounded-lg overflow-hidden hover:border-foreground/30 transition-colors">
-
       <div className="px-5 py-4 border-b border-border flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-0.5 truncate">
@@ -33,12 +33,11 @@ export function BuildCard({ build, children }: Props) {
             {build.name}
           </h3>
         </div>
-        <Link
-          href={`/builds/${build.id}/edit`}
-          className="shrink-0 w-8 h-8 flex items-center justify-center rounded border border-border text-muted-foreground hover:border-foreground hover:text-foreground transition-colors"
-        >
-          <Pencil className="h-3.5 w-3.5" />
-        </Link>
+        <EditBuildButton
+  buildId={build.id}
+  ownerId={build.user.id}
+  sessionUserId={sessionUserId}
+/>
       </div>
 
       {build.components.length > 0 && (
@@ -76,12 +75,9 @@ export function BuildCard({ build, children }: Props) {
         </div>
 
         {children && (
-          <div className="flex items-center gap-2 flex-wrap">
-            {children}
-          </div>
+          <div className="flex items-center gap-2 flex-wrap">{children}</div>
         )}
       </div>
-
     </div>
   );
 }
