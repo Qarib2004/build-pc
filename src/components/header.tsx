@@ -15,7 +15,7 @@ export async function Header() {
           href={href}
           className="font-syne font-extrabold text-base tracking-tight hover:opacity-70 transition-opacity"
         >
-          BUILD<span className="text-green-700">.</span>IT
+          BUILD<span className="text-green-700">.</span>PC
         </Link>
 
         <nav className="hidden md:flex min-w-0 flex-1 justify-end">
