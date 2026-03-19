@@ -1,4 +1,3 @@
-// components/header.tsx
 import { auth } from "@/auth";
 import Link from "next/link";
 import { HeaderNav } from "./header-nav";

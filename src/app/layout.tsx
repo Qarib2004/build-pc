@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Syne } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/header";
 import { Toaster } from "@/components/UI/sonner";
+import ConditionalHeader from "@/components/conditional-header";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,7 +34,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-       <Header/>
+      <ConditionalHeader>
+           <Header /> 
+        </ConditionalHeader>
         {children}
         <Toaster position="top-center"/>
       </body>
